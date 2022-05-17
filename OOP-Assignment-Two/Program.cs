@@ -51,6 +51,21 @@ namespace OOP_Assignment_Two
             }
         }
 
+        public static int numberConvert(string input)
+        {
+            try
+            {
+                string stringInput = inputReceive(input);
+                int returnInt = Int32.Parse(stringInput);
+                return returnInt;
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Input must be a number.");
+                return 0;
+            }
+        }
+
         public static void playGame(Game game)
         {
             SixDie die = new SixDie();
