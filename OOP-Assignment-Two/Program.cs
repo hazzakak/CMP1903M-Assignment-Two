@@ -41,7 +41,7 @@ namespace OOP_Assignment_Two
             GameOutput.StartingGameOutput();
             Game game = new Game();
             // Clear Chat (after 5s)
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(1500);
             Console.Clear();
 
             // Ask how many rounds they have before auto-close.
