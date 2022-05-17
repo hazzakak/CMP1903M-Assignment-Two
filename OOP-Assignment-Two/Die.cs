@@ -10,7 +10,7 @@ namespace OOP_Assignment_Two
     {
         int[] diceRollFive(int[] rolls);
     }
-    class SixDie:IDie
+    class SixDie : IDie
     {
         private static readonly int max_dice_number = 6;
 

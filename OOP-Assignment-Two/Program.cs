@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Assignment_Two
 {
-    internal class Program
+    class Program
     {
         static string inputReceive(string input)
         {
@@ -14,13 +14,29 @@ namespace OOP_Assignment_Two
             return Console.ReadLine();
         }   
         
-        static void endGame(Game game)
+        static Game endGame(Game game)
         {
             GameOutput.LeaderboardOutput(game.PlayerList);
-            Console.WriteLine("\nGame has ended\n");
-            System.Threading.Thread.Sleep(50000);
+            while (true)
+            {
+                Console.WriteLine("\nGame has ended\nWould you like to [P]lay again or [Q]uit?");
+                string response = Console.ReadLine();
+                if (response == "P")
+                {
+                    foreach (Player player in game.PlayerList) { player.Score = 0; }
+                    game.gameState = true;
+                    game.round = 0;
+                    break;
+                }
+                else if (response == "Q")
+                {
+                    Environment.Exit(0);
+                    return game;
+                }
+            }
+            return game;
         }
-        static int numberConvert(string input, string exceptingString)
+        public static int numberConvert(string input, string exceptingString)
         {
             try
             {
@@ -32,6 +48,86 @@ namespace OOP_Assignment_Two
             {
                 Console.WriteLine(exceptingString);
                 return 0;
+            }
+        }
+
+        public static void playGame(Game game)
+        {
+            SixDie die = new SixDie();
+
+            while (game.gameState)
+            {
+                // foreach round:
+                for (; game.round < game.maxRound; game.round++)
+                {
+                    Console.WriteLine($"\n--------------------\nRound {game.round + 1} out of {game.maxRound}\n--------------------\n");
+                    // foreach player:
+                    for (int j = 0; j < game.PlayerList.Count; j++)
+                    {
+                        Player player = game.PlayerList[j];
+                        Console.WriteLine($"Player: {player.Name}\nPlease press ENTER to begin dice throw.");
+                        Console.ReadLine();
+
+                        int[] rolls = { 0, 0, 0, 0, 0 };
+                        rolls = die.diceRollFive(rolls);
+                        bool twoKind = false;
+                        int twoKindNumber = 0;
+
+                        foreach (var number in rolls.GroupBy(x => x))
+                        {
+                            if (number.Count() == 2)
+                            {
+                                twoKind = true;
+                                twoKindNumber = number.Key;
+                            }
+                            else if (number.Count() == 3 || number.Count() == 4 || number.Count() == 5)
+                            {
+                                twoKind = false;
+                            }
+                        }
+
+                        if (twoKind)
+                        {
+                            Console.WriteLine("You have a two of a kind ;( Press ENTER to rethrow the remaining dice!");
+                            GameOutput.getResponse();
+                            int[] rollsTwoKind = { 0, 0, 0, 0, 0 };
+                            for (int k = 0; k < rolls.Length; k++)
+                            {
+                                if (rolls[k] == twoKindNumber) { rollsTwoKind[k] = twoKindNumber; }
+                            }
+                            rolls = die.diceRollFive(rollsTwoKind);
+                        }
+
+                        foreach (var number in rolls.GroupBy(x => x))
+                        {
+                            if (number.Count() == 3)
+                            {
+                                player.Score += 3;
+                                Console.Write("You scored 3 points!");
+                                break;
+                            }
+                            else if (number.Count() == 4)
+                            {
+                                player.Score += 6;
+                                Console.Write("You scored 6 points!");
+                                break;
+                            }
+                            else if (number.Count() == 5)
+                            {
+                                player.Score += 12;
+                                Console.Write("You scored 12 points!");
+                                break;
+                            }
+                        }
+                        if (player.Score >= game.targetScore)
+                        {
+                            Console.WriteLine("You have won for reaching the target score!");
+                            game = endGame(game);
+                            playGame(game);
+                        }
+                    }
+                }
+                endGame(game);
             }
         }
 
@@ -47,14 +143,14 @@ namespace OOP_Assignment_Two
             int rounds = 0;
             while (rounds < 1 || rounds > 15)
             {
-                rounds = numberConvert("How many rounds would you like to play?", "Rounds must be a number.");
+                rounds = numberConvert("How many rounds would you like to play? 1-15", "Rounds must be a number.");
             }
 
             // Ask what the target score is.
             int targetScore = 0;
             while (targetScore < 1 || targetScore > 200)
             {
-                targetScore = numberConvert("What is the target score of the game?", "Target score must be a number.");
+                targetScore = numberConvert("What is the target score of the game? 1-200", "Target score must be a number.");
             }
 
             game.targetScore = targetScore;
@@ -63,22 +159,21 @@ namespace OOP_Assignment_Two
             // Get who's playing (for loop)
             List<Player> playerList = new List<Player>();
 
-            Console.WriteLine("Please list the name of each player and press enter. After you've finished the final player, enter 'exit'.");
+            Console.WriteLine("Please list the name of each player and press enter. After you've finished the final player, enter 'exit'. MUST BE MORE THAN TWO PLAYERS.");
 
             Player playerInit = new Player(Console.ReadLine());
             playerList.Add(playerInit);
 
             if (playerList.Count > 0)
             {
-                while (playerList[playerList.Count - 1].Name != "exit")
+                while (playerList.Count < 10)
                 {
-                    Player player = new Player(Console.ReadLine());
+                    string name = Console.ReadLine();
+                    if (name == "exit" && playerList.Count > 1) { break; }
+                    Player player = new Player(name);
                     playerList.Add(player);
                 }
             }
-
-            // remove the "exit player"
-            playerList.RemoveAt(playerList.Count - 1);
 
             // sync the game object
             game.PlayerList = playerList;
@@ -86,82 +181,12 @@ namespace OOP_Assignment_Two
             // Start Game
             game.gameState = true;
             Console.Clear();
-            SixDie die = new SixDie();
-            while (game.gameState)
-            {
-                // foreach round:
-                for (int i = 0; i < game.maxRound; i++)
-                {
-                    Console.WriteLine($"\n--------------------\nRound {i+1} out of {game.maxRound}\n--------------------\n");
-                    // foreach player:
-                    for (int j = 0; j < playerList.Count; j++)
-                    {
-                        Player player = playerList[j];
-                        Console.WriteLine($"Player: {player.Name}\nPlease press ENTER to begin dice throw.");
-                        Console.ReadLine();
 
-                        int[] rolls = {0,0,0,0,0};
-                        rolls = die.diceRollFive(rolls);
-                        bool twoKind = false;
-                        int twoKindNumber = 0;
+            playGame(game);
+            
+            Console.WriteLine("000000000000");
+            System.Threading.Thread.Sleep(150000);
 
-                        foreach (var number in rolls.GroupBy(x => x))
-                        {
-                            if (number.Count() == 2)
-                            {
-                                twoKind = true;
-                                twoKindNumber = number.Key;
-                            } else if (number.Count() == 3 || number.Count() == 4 || number.Count() == 5)
-                            {
-                                twoKind = false;
-                            }
-                        }
-
-                        if (twoKind)
-                        {
-                            Console.WriteLine("You have a two of a kind ;( Press ENTER to rethrow the remaining dice!");
-                            GameOutput.getResponse();
-                            int[] rollsTwoKind = {0, 0, 0, 0, 0};
-                            for (int k = 0; k < rolls.Length; k++)
-                            {
-                                if (rolls[k] == twoKindNumber) { rollsTwoKind[k] = twoKindNumber; }
-                            }
-                            rolls = die.diceRollFive(rollsTwoKind);
-                        }
-
-                        foreach (var number in rolls.GroupBy(x => x))
-                        {
-                            if (number.Count() == 3) 
-                            {
-                                player.Score += 3;
-                                Console.Write("You scored 3 points!");
-                                break;
-                            } 
-                            else if (number.Count() == 4) 
-                            {
-                                player.Score += 6;
-                                Console.Write("You scored 6 points!");
-                                break;
-                            }
-                            else if (number.Count() == 5) 
-                            {
-                                player.Score += 12;
-                                Console.Write("You scored 12 points!");
-                                break;
-                            }
-                        }
-                        if (player.Score >= game.targetScore)
-                        {
-                            Console.WriteLine("You have won for reaching the target score!");
-                            game.gameState = false;
-                            endGame(game);
-                            return;
-                        }
-                    }
-                }
-                game.gameState = false;
-            }
-            endGame(game);
         }
     }
 }
