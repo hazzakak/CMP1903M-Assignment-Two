@@ -87,7 +87,7 @@ namespace OOP_Assignment_Two
             // Start Game
             game.gameState = true;
             Console.Clear();
-            Die die = new Die();
+            SixDie die = new SixDie();
             while (game.gameState)
             {
                 // foreach round:
@@ -102,7 +102,7 @@ namespace OOP_Assignment_Two
                         Console.ReadLine();
 
                         int[] rolls = {0,0,0,0,0};
-                        rolls = Die.diceRollFive(rolls);
+                        rolls = die.diceRollFive(rolls);
                         bool twoKind = false;
                         int twoKindNumber = 0;
 
@@ -127,7 +127,7 @@ namespace OOP_Assignment_Two
                             {
                                 if (rolls[k] == twoKindNumber) { rollsTwoKind[k] = twoKindNumber; }
                             }
-                            rolls = Die.diceRollFive(rollsTwoKind);
+                            rolls = die.diceRollFive(rollsTwoKind);
                         }
 
                         foreach (var number in rolls.GroupBy(x => x))
