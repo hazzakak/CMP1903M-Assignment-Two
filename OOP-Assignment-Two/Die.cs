@@ -30,12 +30,25 @@ namespace OOP_Assignment_Two
             return rolls;
         }
 
+        public int[] diceRollFive()
+        {
+            Random rnd = new Random();
+            int[] rolls = { rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1) };
+            return rolls;
+        }
+
     }
 
     class TwelveDie : IDie
     {
         private static readonly int max_dice_number = 12;
 
+        public int[] diceRollFive()
+        {
+            Random rnd = new Random();
+            int[] rolls = { rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1), rnd.Next(1, max_dice_number + 1) };
+            return rolls;
+        }
         public int[] diceRollFive(int[] rolls)
         {
             Random rnd = new Random();

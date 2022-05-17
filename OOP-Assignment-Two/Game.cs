@@ -32,14 +32,20 @@ namespace OOP_Assignment_Two
 
     class Output
     {
-        public static string getResponse()
+        public virtual string getResponse()
         {
             return Console.ReadLine();
         }
+
     }
 
     class GameOutput : Output
     {
+        public override string getResponse()
+        {
+            Console.WriteLine("Respond Below: ");
+            return Console.ReadLine();
+        }
         public static void StartingGameOutput()
         {
             Console.Clear();

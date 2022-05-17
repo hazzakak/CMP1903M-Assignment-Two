@@ -6,6 +6,22 @@ using System.Threading.Tasks;
 
 namespace OOP_Assignment_Two
 {
+    public class IncorrectInput : Exception
+    {
+        public IncorrectInput()
+        {
+        }
+
+        public IncorrectInput(string message)
+            : base(message)
+        {
+        }
+
+        public IncorrectInput(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+    }
     class Program
     {
         static string inputReceive(string input)
@@ -19,29 +35,39 @@ namespace OOP_Assignment_Two
             GameOutput.LeaderboardOutput(game.PlayerList);
             while (true)
             {
-                Console.WriteLine("\nGame has ended\nWould you like to [P]lay again or [Q]uit?");
-                string response = Console.ReadLine();
-                if (response == "P")
+                try
                 {
-                    foreach (Player player in game.PlayerList) { player.Score = 0; }
-                    game.gameState = true;
-                    game.round = 0;
-                    break;
-                }
-                else if (response == "Q")
+                    Console.WriteLine("\nGame has ended\nWould you like to [P]lay again or [Q]uit?");
+                    string response = Console.ReadLine();
+                    if (response == "P")
+                    {
+                        foreach (Player player in game.PlayerList) { player.Score = 0; }
+                        game.gameState = true;
+                        game.round = 0;
+                        break;
+                    }
+                    else if (response == "Q")
+                    {
+                        Environment.Exit(0);
+                        return game;
+                    }
+                    else
+                    {
+                        throw new IncorrectInput("Incorrect Input");
+                    }
+                } catch (Exception ex)
                 {
-                    Environment.Exit(0);
-                    return game;
+                    Console.WriteLine("Input is incorrect.");
                 }
             }
             return game;
         }
-        public static int numberConvert(string input, string exceptingString)
+
+        public static int stringToInt(string input, string exceptingString)
         {
             try
             {
-                string stringInput = inputReceive(input);
-                int returnInt = Int32.Parse(stringInput);
+                int returnInt = Int32.Parse(input);
                 return returnInt;
             }
             catch (FormatException)
@@ -49,6 +75,14 @@ namespace OOP_Assignment_Two
                 Console.WriteLine(exceptingString);
                 return 0;
             }
+        }
+
+        public static int numberConvert(string input, string exceptingString)
+        {
+            string stringInput = inputReceive(input);
+            return stringToInt(stringInput, exceptingString);
+
+
         }
 
         public static int numberConvert(string input)
@@ -69,6 +103,7 @@ namespace OOP_Assignment_Two
         public static void playGame(Game game)
         {
             SixDie die = new SixDie();
+            GameOutput output = new GameOutput();
 
             while (game.gameState)
             {
@@ -104,7 +139,7 @@ namespace OOP_Assignment_Two
                         if (twoKind)
                         {
                             Console.WriteLine("You have a two of a kind ;( Press ENTER to rethrow the remaining dice!");
-                            GameOutput.getResponse();
+                            output.getResponse();
                             int[] rollsTwoKind = { 0, 0, 0, 0, 0 };
                             for (int k = 0; k < rolls.Length; k++)
                             {
@@ -190,6 +225,13 @@ namespace OOP_Assignment_Two
                 }
             }
 
+            if (playerList[0].Name == "developer")
+            {
+                Test test = new Test();
+                test.runTest();
+                System.Threading.Thread.Sleep(15000);
+            }
+
             // sync the game object
             game.PlayerList = playerList;
 
@@ -198,10 +240,6 @@ namespace OOP_Assignment_Two
             Console.Clear();
 
             playGame(game);
-            
-            Console.WriteLine("000000000000");
-            System.Threading.Thread.Sleep(150000);
-
         }
     }
 }
