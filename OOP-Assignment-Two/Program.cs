@@ -48,6 +48,8 @@ namespace OOP_Assignment_Two
                     }
                     else if (response == "Q")
                     {
+                        Log log = new Log();
+                        log.logStats(game);
                         Environment.Exit(0);
                         return game;
                     }
