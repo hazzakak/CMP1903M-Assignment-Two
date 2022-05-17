@@ -19,7 +19,6 @@ namespace OOP_Assignment_Two
             GameOutput.LeaderboardOutput(game.PlayerList);
             Console.WriteLine("\nGame has ended\n");
             System.Threading.Thread.Sleep(50000);
-            return;
         }
         static int numberConvert(string input, string exceptingString)
         {
