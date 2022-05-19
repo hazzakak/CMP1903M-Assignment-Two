@@ -50,6 +50,7 @@ namespace OOP_Assignment_Two
                     {
                         Log log = new Log();
                         log.logStats(game);
+                        Console.WriteLine("Stats uploaded to %APPDATA%/25768493Logs");
                         Environment.Exit(0);
                         return game;
                     }
